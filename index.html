@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Game Analytics - First Session Length</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        #error {
+            color: red;
+            display: none;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid red;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Average First Session Length by Registration Date</h1>
+        <div id="error"></div>
+        <canvas id="sessionChart"></canvas>
+    </div>
+
+    <script>
+        async function loadData() {
+            try {
+                const response = await fetch('/api.php');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
+                const result = await response.json();
+                if (!result.success) {
+                    throw new Error(result.error);
+                }
+
+                const data = result.data;
+                createChart(data);
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('error').textContent = 'Error loading data: ' + error.message;
+                document.getElementById('error').style.display = 'block';
+            }
+        }
+
+        function createChart(data) {
+            const ctx = document.getElementById('sessionChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(item => item.registration_date),
+                    datasets: [{
+                        label: 'Average Session Length (minutes)',
+                        data: data.map(item => item.avg_session_length),
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Minutes'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Registration Date'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load data when page loads
+        loadData();
+    </script>
+</body>
+</html>
