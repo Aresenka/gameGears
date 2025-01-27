@@ -17,14 +17,14 @@ cp .env.example .env
 
 3. Запустите контейнеры:
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 База данных будет автоматически инициализирована при первом запуске (скрипт `init.sql`).
 
 4. Сгенерируйте тестовые данные:
 ```bash
-docker-compose exec web php seeder.php
+docker compose exec web php seeder.php
 ```
 
 5. Откройте в браузере:
